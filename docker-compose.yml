@@ -1,0 +1,30 @@
+services:
+  postgres:
+    image: postgres:17.1
+    restart: unless-stopped
+    env_file: .env
+    ports:
+      - ${POSTGRES_PORT:-5432}:5432
+    networks:
+      - moshi
+    volumes:
+      - moshi-postgres:/var/lib/postgresql/data
+
+  moshi-api:
+    build:
+      dockerfile: ./docker/go/Dockerfile
+      context: .
+      target: ${BUILD_TARGET:-debug}
+    env_file: .env
+    ports:
+      - ${APP_PORT:-80}:80
+    networks:
+      - moshi
+    volumes:
+      - ./:/app
+
+networks:
+  moshi:
+
+volumes:
+  moshi-postgres:
